@@ -17,5 +17,5 @@
 
 <u><h3>Problemas Conhecidos: </h3></u>
 <ul>
-  <li>A Decisão do Jogador vencedor está acontecendo prematuramente, Faltando 2 jogadores já aparece um vencedor. o que está errado.</li>
+  <li>Até agora apenar melhorar a aparencia</li>
 </ul>
