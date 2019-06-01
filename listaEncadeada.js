@@ -27,7 +27,7 @@ class ListaLinearEnc {
         return this.carta2(ptAtual);
         break;
       case 3:
-        this.addtext(`\nE Elimina a Si mesmo`);
+        this.addtext(`\nElimina a Si mesmo`);
         return this.carta3(ptAnterior, ptAtual);
         break;
       case 5:
@@ -58,25 +58,33 @@ class ListaLinearEnc {
 
   rodada() {
     let ptAux = this.ptLista;
+    console.log(ptAux);
     let ptAux2 = ptAux;
+    console.log(ptAux2);
     let qtd = 0;
-    let index = 1;
-    while (index < 10) {
+
+    //Pega o anterior do primeiro da lista posso tornar uma funcao ?
+    while (ptAux2.proxNodo.chave != this.ptLista.chave) {
       ptAux2 = ptAux2.proxNodo;
-      index++;
     }
     let ptAnterior = ptAux2;
+
     let cont = 1;
     while (this.qtd > 1) {
-      console.log(this.ptLista);
       this.addtext(`\n<Rodada ${cont}>\n`);
       let i = 1;
-      while (i < this.qtd) {
+      let qtdRod = this.qtd;
+      while (ptAux.chave != this.ptLista && this.qtd >= 1) {
         this.addtext(`\n<Jogada ${i}>`);
         this.addtext(`\nA vez do Jogador ${ptAux.chave}:`);
-        let carta = this.tiraCarta();
-        this.addtext(`\nTirou a Carta ${carta}:`);
-        let obj = this.executaCarta(carta, ptAnterior, ptAux);
+        confirm(
+          "A vez é de: " +
+            ptAux.chave +
+            "\nPressione Ok para retirar uma carta."
+        );
+
+        let obj = this.executaCarta(this.tiraCarta(), ptAnterior, ptAux);
+        this.addtext(`\nTirou a Carta ${obj.carta}:`);
         if (obj != null) {
           ptAnterior = obj.ant;
           ptAux = obj.fa;
@@ -86,6 +94,7 @@ class ListaLinearEnc {
         }
         this.addtext(`\n</Jogada ${i}>\n`);
         i++;
+        this.mostraJogadores();
       }
       this.addtext(`\n</Rodada ${cont}>\n`);
       cont++;
@@ -98,7 +107,12 @@ class ListaLinearEnc {
     let futuroAtual;
     futuroAtual = ptAtual.proxNodo.proxNodo;
     anterior = ptAtual.proxNodo;
-
+    confirm(
+      "Carta 2: Pula o jogador seguinte." +
+        "\nO jogador(a) " +
+        anterior.chave +
+        " será pulado(a)."
+    );
     return { fa: futuroAtual, ant: anterior, carta: 2 };
   }
   // Elimina o jogador atual
@@ -108,6 +122,13 @@ class ListaLinearEnc {
       this.ptLista = ptAtual.proxNodo;
     }
     this.qtd--;
+    this.removeVetor(this.buscaLinear(ptAtual.chave));
+    confirm(
+      "Carta 3: O jogador atual é removido." +
+        "\nO jogador(a) " +
+        ptAtual.chave +
+        " foi removido(a)."
+    );
     return { fa: ptAtual.proxNodo, ant: ptAnterior, carta: 3 };
   }
 
@@ -129,13 +150,20 @@ class ListaLinearEnc {
     anteriorRemovido.proxNodo = removido.proxNodo;
     //Aqui remove 1 da rodada
     this.qtd--;
+    this.removeVetor(this.buscaLinear(removido.chave));
+    confirm(
+      "Carta 5: Remova o terceiro jogador seguinte, a partir do jogador atual." +
+        "\nO jogador(a) " +
+        removido.chave +
+        " foi removido(a)."
+    );
     return { fa: futuroAtual, ant: anterior, carta: 5 };
   }
 
   carta7(ptAnterior, ptAtual) {
     let antDoAnt;
     let ptaux1 = ptAtual;
-    //Aqui pega o anterior do anterior para
+    //Aqui pega o anterior do anterior para remover
     while (ptaux1.proxNodo.chave != ptAnterior.chave) {
       ptaux1 = ptaux1.proxNodo;
     }
@@ -144,7 +172,14 @@ class ListaLinearEnc {
     }
     //linkar o seu prox nodo ao ptAtual
     antDoAnt = ptaux1;
+    this.removeVetor(this.buscaLinear(ptAnterior.chave));
     antDoAnt.proxNodo = ptAtual;
+    confirm(
+      "Carta 7: Remova o jogador anterior." +
+        "\nO jogador(a) " +
+        ptAnterior.chave +
+        " foi removido(a)."
+    );
     this.qtd--;
     return { fa: ptAtual.proxNodo, ant: ptAtual, carta: 7 };
   }
@@ -171,8 +206,14 @@ class ListaLinearEnc {
         this.playersNames.push(nodo.chave);
         //Aqui aumenta o tamanho de qtd
         this.qtd++;
-      } else if ((this.qtd = 9)) {
+      }
+      if (this.qtd == 9) {
+        console.log(this.ptLista);
+        console.log("circular");
+        ptAux.proxNodo = nodo;
+        ptAux = ptAux.proxNodo;
         ptAux.proxNodo = this.ptLista;
+        console.log(this.ptLista);
       }
     }
     return true;
@@ -199,6 +240,21 @@ class ListaLinearEnc {
     }
   }
   // Removi o Insere no Início
+  buscaLinear(chave) {
+    console.log(chave);
+    let index = this.playersNames.indexOf(chave);
+    return index;
+  }
+
+  removeVetor(index) {
+    console.log(index);
+    this.playersNames.splice(index, 1);
+  }
+
+  mostraJogadores() {
+    addtext(`\nJogadores restantes: `);
+    addtext(`\n${this.playersNames}`);
+  }
 
   //Aqui eu tenho que universalizar essa busca de uma maneira inteligente.
   busca(chave, funcao) {
